@@ -63,6 +63,7 @@ following boards:
 *  Xilinx VCU1525 (Xilinx Virtex UltraScale+ XCVU9P)
 *  Xilinx ZCU102 (Xilinx Zynq UltraScale+ XCZU9EG)
 *  Xilinx ZCU106 (Xilinx Zynq UltraScale+ XCZU7EV)
+* Opal Kelly XEM8320 (Xilinx Artix Ultrascale+ XCAU25P-FFVB676-2-E) + SZG-PCIEX4
 
 ## Documentation
 
