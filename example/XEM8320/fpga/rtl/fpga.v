@@ -32,6 +32,7 @@ THE SOFTWARE.
  * FPGA top-level module
  */
 module fpga (
+
     /*
      * GPIO
      */
@@ -50,8 +51,8 @@ module fpga (
     input  wire       sfp_2_rx_n,
     output wire       sfp_2_tx_p,
     output wire       sfp_2_tx_n,
-    input  wire       sfp_mgt_refclk_p, //125MHz from U36
-    input  wire       sfp_mgt_refclk_n, //125MHz from U36
+    input  wire       sfp_mgt_refclk_p,
+    input  wire       sfp_mgt_refclk_n,
     output wire       sfp_1_tx_disable,
     output wire       sfp_2_tx_disable,
     input  wire       sfp_1_npres,
@@ -62,12 +63,8 @@ module fpga (
     output wire [1:0] sfp_2_rs
 );
 
-// Clock and reset
-
-//wire clk_161mhz_int;
-
 // Internal 125 MHz clock
-//wire clk_125mhz_mmcm_out;
+wire clk_125mhz_mmcm_out;
 wire clk_125mhz_int;
 wire rst_125mhz_int;
 
@@ -75,88 +72,83 @@ wire rst_125mhz_int;
 wire clk_156mhz_int;
 wire rst_156mhz_int;
 
-//wire mmcm_rst = 1'b0;
-//wire mmcm_locked;
-//wire mmcm_clkfb;
+wire mmcm_rst = 1'b0;
+wire mmcm_locked;
+wire mmcm_clkfb;
 
 // MMCM instance
-// 161.13 MHz in, 125 MHz out
+// 156.25 MHz in, 125 MHz out
 // PFD range: 10 MHz to 500 MHz
 // VCO range: 800 MHz to 1600 MHz
-// M = 64, D = 11 sets Fvco = 937.5 MHz (in range)
-// Divide by 7.5 to get output frequency of 125 MHz
-//MMCME4_BASE #(
-//    .BANDWIDTH("OPTIMIZED"),
-//    .CLKOUT0_DIVIDE_F(7.5),
-//    .CLKOUT0_DUTY_CYCLE(0.5),
-//    .CLKOUT0_PHASE(0),
-//    .CLKOUT1_DIVIDE(1),
-//    .CLKOUT1_DUTY_CYCLE(0.5),
-//    .CLKOUT1_PHASE(0),
-//    .CLKOUT2_DIVIDE(1),
-//    .CLKOUT2_DUTY_CYCLE(0.5),
-//    .CLKOUT2_PHASE(0),
-//    .CLKOUT3_DIVIDE(1),
-//    .CLKOUT3_DUTY_CYCLE(0.5),
-//    .CLKOUT3_PHASE(0),
-//    .CLKOUT4_DIVIDE(1),
-//    .CLKOUT4_DUTY_CYCLE(0.5),
-//    .CLKOUT4_PHASE(0),
-//    .CLKOUT5_DIVIDE(1),
-//    .CLKOUT5_DUTY_CYCLE(0.5),
-//    .CLKOUT5_PHASE(0),
-//    .CLKOUT6_DIVIDE(1),
-//    .CLKOUT6_DUTY_CYCLE(0.5),
-//    .CLKOUT6_PHASE(0),
-//    .CLKFBOUT_MULT_F(64),
-//    .CLKFBOUT_PHASE(0),
-//    .DIVCLK_DIVIDE(11),
-//    .REF_JITTER1(0.010),
-//    .CLKIN1_PERIOD(6.206),
-//    .STARTUP_WAIT("FALSE"),
-//    .CLKOUT4_CASCADE("FALSE")
-//)
-//clk_mmcm_inst (
-//    .CLKIN1(clk_161mhz_int),
-//    .CLKFBIN(mmcm_clkfb),
-//    .RST(mmcm_rst),
-//    .PWRDWN(1'b0),
-//    .CLKOUT0(clk_125mhz_mmcm_out),
-//    .CLKOUT0B(),
-//    .CLKOUT1(),
-//    .CLKOUT1B(),
-//    .CLKOUT2(),
-//    .CLKOUT2B(),
-//    .CLKOUT3(),
-//    .CLKOUT3B(),
-//    .CLKOUT4(),
-//    .CLKOUT5(),
-//    .CLKOUT6(),
-//    .CLKFBOUT(mmcm_clkfb),
-//    .CLKFBOUTB(),
-//    .LOCKED(mmcm_locked)
-//);
+// M = 8, D = 1 sets Fvco = 1250MHz (in range)
+// Divide by 10 to get output frequency of 125 MHz
+MMCME4_BASE #(
+    .BANDWIDTH("OPTIMIZED"),
+    .CLKOUT0_DIVIDE_F(10),
+    .CLKOUT0_DUTY_CYCLE(0.5),
+    .CLKOUT0_PHASE(0),
+    .CLKOUT1_DIVIDE(1),
+    .CLKOUT1_DUTY_CYCLE(0.5),
+    .CLKOUT1_PHASE(0),
+    .CLKOUT2_DIVIDE(1),
+    .CLKOUT2_DUTY_CYCLE(0.5),
+    .CLKOUT2_PHASE(0),
+    .CLKOUT3_DIVIDE(1),
+    .CLKOUT3_DUTY_CYCLE(0.5),
+    .CLKOUT3_PHASE(0),
+    .CLKOUT4_DIVIDE(1),
+    .CLKOUT4_DUTY_CYCLE(0.5),
+    .CLKOUT4_PHASE(0),
+    .CLKOUT5_DIVIDE(1),
+    .CLKOUT5_DUTY_CYCLE(0.5),
+    .CLKOUT5_PHASE(0),
+    .CLKOUT6_DIVIDE(1),
+    .CLKOUT6_DUTY_CYCLE(0.5),
+    .CLKOUT6_PHASE(0),
+    .CLKFBOUT_MULT_F(8),
+    .CLKFBOUT_PHASE(0),
+    .DIVCLK_DIVIDE(1),
+    .REF_JITTER1(0.010),
+    .CLKIN1_PERIOD(6.4),
+    .STARTUP_WAIT("FALSE"),
+    .CLKOUT4_CASCADE("FALSE")
+)
+clk_mmcm_inst (
+    .CLKIN1(sfp_mgt_refclk_bufg), // 156.25MHz from X0Y0 REFCLK1 bank 224 (XEM8320 CXX only)
+    .CLKFBIN(mmcm_clkfb),
+    .RST(mmcm_rst),
+    .PWRDWN(1'b0),
+    .CLKOUT0(clk_125mhz_mmcm_out),
+    .CLKOUT0B(),
+    .CLKOUT1(),
+    .CLKOUT1B(),
+    .CLKOUT2(),
+    .CLKOUT2B(),
+    .CLKOUT3(),
+    .CLKOUT3B(),
+    .CLKOUT4(),
+    .CLKOUT5(),
+    .CLKOUT6(),
+    .CLKFBOUT(mmcm_clkfb),
+    .CLKFBOUTB(),
+    .LOCKED(mmcm_locked)
+);
 
-//BUFG
-//clk_125mhz_bufg_inst (
-//    .I(clk_125mhz_mmcm_out),
-//    .O(clk_125mhz_int)
-//);
+BUFG
+clk_125mhz_bufg_inst (
+    .I(clk_125mhz_mmcm_out),
+    .O(clk_125mhz_int)
+);
 
-// Bypass all the MMCM stuff above as refclk is already 125MHz on XEM8320 board   
-assign clk_125mhz_int = sfp_mgt_refclk_bufg;   
-   
-//sync_reset #(
-//    .N(4)
-//)
-//sync_reset_125mhz_inst (
-//    .clk(clk_125mhz_int),
-//    .rst(~mmcm_locked),
-//    .out(rst_125mhz_int)
-//);
+sync_reset #(
+    .N(4)
+)
+sync_reset_125mhz_inst (
+    .clk(clk_125mhz_int),
+    .rst(~mmcm_locked),
+    .out(rst_125mhz_int)
+);
 
-assign rst_125mhz_int = 1'b0;
-      
 // GPIO
 wire [1:0] sfp_1_led_int;
 wire [1:0] sfp_2_led_int;
@@ -166,9 +158,8 @@ wire [1:0] sma_led_int;
 
 assign sfp_1_tx_disable = 1'b0;
 assign sfp_2_tx_disable = 1'b0;
-   
-assign sfp_1_rs = {1'b1, 1'b1};
-assign sfp_2_rs = {1'b1, 1'b1};
+assign sfp_1_rs = {1'b1,1'b1};
+assign sfp_2_rs = {1'b1,1'b1};
 
 wire        sfp_1_tx_clk_int;
 wire        sfp_1_tx_rst_int;
@@ -199,25 +190,24 @@ wire sfp_mgt_refclk;
 wire sfp_mgt_refclk_int;
 wire sfp_mgt_refclk_bufg;
 
-//assign clk_161mhz_int = sfp_mgt_refclk_bufg;
+//assign clk_156mhz_i = sfp_mgt_refclk_bufg;
 
-// 125MHz differential transceiver buffer
 IBUFDS_GTE4 ibufds_gte4_sfp_mgt_refclk_inst (
-    .I     (sfp_mgt_refclk_p),
-    .IB    (sfp_mgt_refclk_n),
+    .I     (sfp_mgt_refclk_p),// 156.25MHz from X0Y0 REFCLK1 (CXX only)
+    .IB    (sfp_mgt_refclk_n),// 156.25MHz from X0Y0 REFCLK1 (CXX only)
     .CEB   (1'b0),
-    .O     (sfp_mgt_refclk),    // 125MHz
-    .ODIV2 (sfp_mgt_refclk_int) // 125MHz
+    .O     (sfp_mgt_refclk),
+    .ODIV2 (sfp_mgt_refclk_int)
 );
-
+   
 BUFG_GT bufg_gt_refclk_inst (
     .CE      (sfp_gtpowergood),
     .CEMASK  (1'b1),
     .CLR     (1'b0),
     .CLRMASK (1'b1),
     .DIV     (3'b000),
-    .I       (sfp_mgt_refclk_int), // 125MHz
-    .O       (sfp_mgt_refclk_bufg) // 125MHz
+    .I       (sfp_mgt_refclk_int),
+    .O       (sfp_mgt_refclk_bufg)
 );
 
 wire sfp_qpll0lock;
