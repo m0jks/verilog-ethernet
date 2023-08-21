@@ -57,6 +57,8 @@ module eth_xcvr_phy_wrapper #
      * PLL out
      */
     input  wire                   xcvr_gtrefclk00_in,
+    input  wire                   xcvr_gtnorthrefclk00_in,
+    input  wire [2:0]             xcvr_qpll0refclksel_in,
     output wire                   xcvr_qpll0lock_out,
     output wire                   xcvr_qpll0outclk_out,
     output wire                   xcvr_qpll0outrefclk_out,
@@ -127,6 +129,9 @@ if (HAS_COMMON) begin : xcvr
 
         // PLL
         .gtrefclk00_in(xcvr_gtrefclk00_in),
+	.gtnorthrefclk00_in(xcvr_gtnorthrefclk00_in),
+	.qpll0refclksel_in(xcvr_qpll0refclksel_in),		   
+	//	   
         .qpll0lock_out(xcvr_qpll0lock_out),
         .qpll0outclk_out(xcvr_qpll0outclk_out),
         .qpll0outrefclk_out(xcvr_qpll0outrefclk_out),

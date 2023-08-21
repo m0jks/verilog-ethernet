@@ -51,8 +51,8 @@ module fpga (
     input  wire       sfp_2_rx_n,
     output wire       sfp_2_tx_p,
     output wire       sfp_2_tx_n,
-    input  wire       sfp_mgt_refclk_p,
-    input  wire       sfp_mgt_refclk_n,
+    input  wire       sfp_mgt_refclk_p,// 156.25MHz from X0Y0 REFCLK1 (CXX only)
+    input  wire       sfp_mgt_refclk_n,// 156.25MHz from X0Y0 REFCLK1 (CXX only)
     output wire       sfp_1_tx_disable,
     output wire       sfp_2_tx_disable,
     input  wire       sfp_1_npres,
@@ -190,8 +190,6 @@ wire sfp_mgt_refclk;
 wire sfp_mgt_refclk_int;
 wire sfp_mgt_refclk_bufg;
 
-//assign clk_156mhz_i = sfp_mgt_refclk_bufg;
-
 IBUFDS_GTE4 ibufds_gte4_sfp_mgt_refclk_inst (
     .I     (sfp_mgt_refclk_p),// 156.25MHz from X0Y0 REFCLK1 (CXX only)
     .IB    (sfp_mgt_refclk_n),// 156.25MHz from X0Y0 REFCLK1 (CXX only)
@@ -214,6 +212,9 @@ wire sfp_qpll0lock;
 wire sfp_qpll0outclk;
 wire sfp_qpll0outrefclk;
 
+`define GTREFCLK00_SEL      3'b000
+`define GTNORTHREFCLK00_SEL 3'b011
+
 eth_xcvr_phy_wrapper #(
     .HAS_COMMON(1)
 )
@@ -224,8 +225,12 @@ sfp_1_phy_inst (
     // Common
     .xcvr_gtpowergood_out(sfp_gtpowergood),
 
-    // PLL out
-    .xcvr_gtrefclk00_in(sfp_mgt_refclk),
+    // PLL out. XEM8320 156.25MHz enters on Bank224 (X0Y0) but the SFP diff pairs are connected to
+    // Bank 224 (X0Y8). Therefore use gtnorthrefclk0 as clock input. See UG578 pg38	       
+    .xcvr_gtrefclk00_in(1'b0),
+    .xcvr_gtnorthrefclk00_in(sfp_mgt_refclk),
+    .xcvr_qpll0refclksel_in(`GTNORTHREFCLK00_SEL),
+		
     .xcvr_qpll0lock_out(sfp_qpll0lock),
     .xcvr_qpll0outclk_out(sfp_qpll0outclk),
     .xcvr_qpll0outrefclk_out(sfp_qpll0outrefclk),
@@ -308,10 +313,10 @@ sfp_2_phy_inst (
     .phy_rx_prbs31_enable()
 );
 
-assign sfp_1_led[0] = sfp_1_rx_block_lock;
-assign sfp_1_led[1] = 1'b0;
-assign sfp_2_led[0] = sfp_2_rx_block_lock;
-assign sfp_2_led[1] = 1'b0;
+assign sfp_1_led = {sfp_1_rx_block_lock, sfp_1_los};
+assign sfp_2_led = {sfp_2_rx_block_lock, sfp_2_los};
+   
+		   
 assign sma_led = sma_led_int;
 
 fpga_core
