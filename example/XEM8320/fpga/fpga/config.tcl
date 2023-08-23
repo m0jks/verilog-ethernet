@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Alex Forencich
+# Copyright (c) 2023 Dave Pegler
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -21,30 +21,44 @@
 # Transceiver configuration
 set eth_xcvr_freerun_freq {125}
 set eth_xcvr_line_rate {10.3125}
-set eth_xcvr_sec_line_rate {0}
 set eth_xcvr_refclk_freq {156.25}
 set eth_xcvr_qpll_fracn [expr {int(fmod($eth_xcvr_line_rate*1000/2 / $eth_xcvr_refclk_freq, 1)*pow(2, 24))}]
-set eth_xcvr_sec_qpll_fracn [expr {int(fmod($eth_xcvr_sec_line_rate*1000/2 / $eth_xcvr_refclk_freq, 1)*pow(2, 24))}]
 set eth_xcvr_rx_eq_mode {DFE}
 
-set xcvr_config [dict create]
+# SFP_1
+set xcvr_config_sfp_1 [dict create]
+#
+dict set xcvr_config_sfp_1 CONFIG.TX_LINE_RATE $eth_xcvr_line_rate
+dict set xcvr_config_sfp_1 CONFIG.TX_QPLL_FRACN_NUMERATOR $eth_xcvr_qpll_fracn
+dict set xcvr_config_sfp_1 CONFIG.TX_REFCLK_FREQUENCY $eth_xcvr_refclk_freq
+dict set xcvr_config_sfp_1 CONFIG.RX_LINE_RATE $eth_xcvr_line_rate
+dict set xcvr_config_sfp_1 CONFIG.RX_QPLL_FRACN_NUMERATOR $eth_xcvr_qpll_fracn
+dict set xcvr_config_sfp_1 CONFIG.RX_REFCLK_FREQUENCY $eth_xcvr_refclk_freq
+dict set xcvr_config_sfp_1 CONFIG.RX_EQ_MODE $eth_xcvr_rx_eq_mode
+dict set xcvr_config_sfp_1 CONFIG.CHANNEL_ENABLE {X0Y8}
+dict set xcvr_config_sfp_1 CONFIG.RX_MASTER_CHANNEL {X0Y8}
+dict set xcvr_config_sfp_1 CONFIG.RX_REFCLK_SOURCE {X0Y8 clk1-2}
+dict set xcvr_config_sfp_1 CONFIG.TX_MASTER_CHANNEL {X0Y8}
+dict set xcvr_config_sfp_1 CONFIG.TX_REFCLK_SOURCE {X0Y8 clk1-2}
+dict set xcvr_config_sfp_1 CONFIG.FREERUN_FREQUENCY $eth_xcvr_freerun_freq
+#
+set_property -dict $xcvr_config_sfp_1 [get_ips eth_xcvr_gt_full]
 
-dict set xcvr_config CONFIG.TX_LINE_RATE $eth_xcvr_line_rate
-dict set xcvr_config CONFIG.TX_QPLL_FRACN_NUMERATOR $eth_xcvr_qpll_fracn
-dict set xcvr_config CONFIG.TX_REFCLK_FREQUENCY $eth_xcvr_refclk_freq
-dict set xcvr_config CONFIG.RX_LINE_RATE $eth_xcvr_line_rate
-dict set xcvr_config CONFIG.RX_QPLL_FRACN_NUMERATOR $eth_xcvr_qpll_fracn
-dict set xcvr_config CONFIG.RX_REFCLK_FREQUENCY $eth_xcvr_refclk_freq
-dict set xcvr_config CONFIG.RX_EQ_MODE $eth_xcvr_rx_eq_mode
-if {$eth_xcvr_sec_line_rate != 0} {
-    dict set xcvr_config CONFIG.SECONDARY_QPLL_ENABLE true
-    dict set xcvr_config CONFIG.SECONDARY_QPLL_FRACN_NUMERATOR $eth_xcvr_sec_qpll_fracn
-    dict set xcvr_config CONFIG.SECONDARY_QPLL_LINE_RATE $eth_xcvr_sec_line_rate
-    dict set xcvr_config CONFIG.SECONDARY_QPLL_REFCLK_FREQUENCY $eth_xcvr_refclk_freq
-} else {
-    dict set xcvr_config CONFIG.SECONDARY_QPLL_ENABLE false
-}
-dict set xcvr_config CONFIG.FREERUN_FREQUENCY $eth_xcvr_freerun_freq
-
-set_property -dict $xcvr_config [get_ips eth_xcvr_gt_full]
-set_property -dict $xcvr_config [get_ips eth_xcvr_gt_channel]
+# SFP_2
+set xcvr_config_sfp_2 [dict create]
+#
+dict set xcvr_config_sfp_2 CONFIG.TX_LINE_RATE $eth_xcvr_line_rate
+dict set xcvr_config_sfp_2 CONFIG.TX_QPLL_FRACN_NUMERATOR $eth_xcvr_qpll_fracn
+dict set xcvr_config_sfp_2 CONFIG.TX_REFCLK_FREQUENCY $eth_xcvr_refclk_freq
+dict set xcvr_config_sfp_2 CONFIG.RX_LINE_RATE $eth_xcvr_line_rate
+dict set xcvr_config_sfp_2 CONFIG.RX_QPLL_FRACN_NUMERATOR $eth_xcvr_qpll_fracn
+dict set xcvr_config_sfp_2 CONFIG.RX_REFCLK_FREQUENCY $eth_xcvr_refclk_freq
+dict set xcvr_config_sfp_2 CONFIG.RX_EQ_MODE $eth_xcvr_rx_eq_mode
+dict set xcvr_config_sfp_2 CONFIG.CHANNEL_ENABLE {X0Y9}
+dict set xcvr_config_sfp_2 CONFIG.RX_MASTER_CHANNEL {X0Y9}
+dict set xcvr_config_sfp_2 CONFIG.RX_REFCLK_SOURCE {X0Y9 clk1-2}
+dict set xcvr_config_sfp_2 CONFIG.TX_MASTER_CHANNEL {X0Y9}
+dict set xcvr_config_sfp_2 CONFIG.TX_REFCLK_SOURCE {X0Y9 clk1-2}
+dict set xcvr_config_sfp_2 CONFIG.FREERUN_FREQUENCY $eth_xcvr_freerun_freq
+#
+set_property -dict $xcvr_config_sfp_2 [get_ips eth_xcvr_gt_channel]
