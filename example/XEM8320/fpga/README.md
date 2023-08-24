@@ -1,4 +1,5 @@
-# Verilog Ethernet XEM8320 10G Example Design. Dave Pegler {peglerd@gmail.com, dpegler@crfs.com}
+# Verilog Ethernet XEM8320 10G Example Design.
+# Dave Pegler {peglerd@gmail.com, dpegler@crfs.com}
 
 ## Introduction
 
