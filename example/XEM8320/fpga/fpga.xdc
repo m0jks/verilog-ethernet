@@ -1,16 +1,6 @@
-# XDC constraints for the XEM8320 
-# part: xcau25p-ffvb676-2-e
+# XDC constraints XEM8320 10G Example Design. Dave Pegler {peglerd@gmail.com, dpegler@crfs.com}
 
-# General configuration
-set_property CFGBVS GND                                      [current_design]
-set_property CONFIG_VOLTAGE 1.8                              [current_design]
-set_property BITSTREAM.GENERAL.COMPRESS true                 [current_design]
-set_property BITSTREAM.CONFIG.UNUSEDPIN Pullup               [current_design]
-set_property BITSTREAM.CONFIG.CONFIGRATE 31.9                [current_design]
-set_property BITSTREAM.CONFIG.BPI_PAGE_SIZE 8                [current_design]
-set_property BITSTREAM.CONFIG.BPI_1ST_READ_CYCLE 4           [current_design]
-set_property CONFIG_MODE BPI16                               [current_design]
-set_property BITSTREAM.CONFIG.OVERTEMPSHUTDOWN Enable        [current_design]
+# part: xcau25p-ffvb676-2-e
 
 ## 100MHz reference from U42 (FABRIC_REFCLK)
 #set_property -dict {LOC T24} [get_ports fabric_100mhz_refclk_p]
@@ -52,17 +42,23 @@ set_property -dict {LOC B14 IOSTANDARD LVCMOS18 SLEW SLOW DRIVE 12} [get_ports {
 set_property -dict {LOC A12 IOSTANDARD LVCMOS18 SLEW SLOW DRIVE 12} [get_ports {sfp_2_rs[1]}]; # Bank 87, VIO2, (SYZYGY port D)
 set_property -dict {LOC C13 IOSTANDARD LVCMOS18 SLEW SLOW DRIVE 12} [get_ports sfp_1_tx_disable]; # Bank 87, VIO2, (SYZYGY port D)
 set_property -dict {LOC F13 IOSTANDARD LVCMOS18 SLEW SLOW DRIVE 12} [get_ports sfp_2_tx_disable]; # Bank 87, VIO2, (SYZYGY port D)
-#
-#set_property -dict {LOC  IOSTANDARD LVCMOS18 PULLUP true} [get_ports sfp_1_npres]
-#set_property -dict {LOC  IOSTANDARD LVCMOS16 PULLUP true} [get_ports sfp_2_npres]
 
 # 156.25 MGT reference clock
 create_clock -period 6.4 -name sfp_mgt_refclk [get_ports sfp_mgt_refclk_p]
-
+#
 set_false_path -to [get_ports {sfp_1_tx_disable sfp_2_tx_disable sfp_1_rs sfp_2_rs}]
 set_output_delay 0 [get_ports {sfp_1_tx_disable sfp_2_tx_disable sfp_1_rs sfp_2_rs}]
-
-#set_false_path -from [get_ports {sfp_1_npres sfp_2_npres sfp_1_los sfp_2_los}]
+#
 set_false_path -from [get_ports {sfp_1_los sfp_2_los}]
-#set_input_delay 0 [get_ports {sfp_1_npres sfp_2_npres sfp_1_los sfp_2_los}]
 set_input_delay 0 [get_ports {sfp_1_los sfp_2_los}]
+
+#  Bistream configuration
+set_property CFGBVS GND                                      [current_design]
+set_property CONFIG_VOLTAGE 1.8                              [current_design]
+set_property BITSTREAM.GENERAL.COMPRESS true                 [current_design]
+set_property BITSTREAM.CONFIG.UNUSEDPIN Pullup               [current_design]
+set_property BITSTREAM.CONFIG.CONFIGRATE 31.9                [current_design]
+set_property BITSTREAM.CONFIG.BPI_PAGE_SIZE 8                [current_design]
+set_property BITSTREAM.CONFIG.BPI_1ST_READ_CYCLE 4           [current_design]
+set_property CONFIG_MODE BPI16                               [current_design]
+set_property BITSTREAM.CONFIG.OVERTEMPSHUTDOWN Enable        [current_design]
