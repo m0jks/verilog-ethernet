@@ -308,11 +308,10 @@ sfp_2_phy_inst (
     .phy_rx_prbs31_enable()
 );
 
-assign sfp_1_led[0] = sfp_1_rx_block_lock;
-assign sfp_1_led[1] = 1'b0;
-assign sfp_2_led[0] = sfp_2_rx_block_lock;
-assign sfp_2_led[1] = 1'b0;
-assign sma_led = sma_led_int;
+assign sfp_1_led = { sfp_1_rx_block_lock, sfp_1_los };
+assign sfp_2_led = { sfp_2_rx_block_lock, sfp_2_los };
+   
+assign sma_led   = sma_led_int;
 
 fpga_core
 core_inst (
