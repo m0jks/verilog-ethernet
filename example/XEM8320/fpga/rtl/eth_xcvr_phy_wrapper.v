@@ -149,7 +149,7 @@ if (HAS_COMMON) begin : xcvr
         .txpmaresetdone_out(),
         .txprgdivresetdone_out(),
 
-        .txpolarity_in(1'b1),
+        .txpolarity_in(1'b0),
 
         .gtwiz_userdata_tx_in(gt_txdata),
         .txheader_in(gt_txheader),
@@ -213,7 +213,7 @@ end else begin : xcvr
         .txpmaresetdone_out(),
         .txprgdivresetdone_out(),
 
-        .txpolarity_in(1'b1),
+        .txpolarity_in(1'b0),
 
         .gtwiz_userdata_tx_in(gt_txdata),
         .txheader_in(gt_txheader),
